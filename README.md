@@ -1,4 +1,7 @@
 # TDD Bank Account
+
+## TDD Manifesto Excercise 6
+
 Note: This is an advanced example where the solution requires knowledge of using a mocking framework. The possible solution can also have an elaborated design. Solve it only if you feel comfortable with mocking frameworks and designing your code.
 
 Create a simple bank application with features of depositing, withdrawing, and printing account statements.
@@ -17,3 +20,7 @@ public class Account {
 3. Use Strings and Integers for dates and amounts (keep it simple)
 
 4. Don’t worry about the spacing in the statement printed in the console
+
+### Requirements
+
+1. Deposit into Account

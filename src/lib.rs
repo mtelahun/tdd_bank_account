@@ -12,8 +12,10 @@ impl BankAccount {
         }
     }
 
-    pub fn deposit(&self, amount: Decimal) -> Decimal {
-        amount
+    pub fn deposit(&mut self, amount: Decimal) -> Decimal {
+        self.balance += amount;
+
+        self.balance
     }
 }
 
@@ -29,7 +31,7 @@ mod tests {
     fn given_account_when_amount_deposited_then_new_balance_equals_amount() {
         // Arrange
         let amount = Decimal::new(10000, 2);    // 100.00
-        let bank_account = BankAccount::new();
+        let mut bank_account = BankAccount::new();
 
         // Act
         let new_balance = bank_account.deposit(amount);
@@ -42,7 +44,7 @@ mod tests {
     fn given_account_with_balance_when_amount_deposited_then_new_balance_increased_by_amount() {
         // Arrange
         let amount = Decimal::new(10000, 2);    // 100.00
-        let bank_account = BankAccount::new();
+        let mut bank_account = BankAccount::new();
         let _ = bank_account.deposit(amount);
 
         // Act

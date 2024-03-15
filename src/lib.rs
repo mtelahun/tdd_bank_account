@@ -5,6 +5,11 @@ struct BankAccount {
     balance: Decimal,
 }
 
+#[derive(Debug, PartialEq)]
+pub enum Error {
+    InsufficientBalance,
+}
+
 impl BankAccount {
     pub fn new() -> Self {
         Self {
@@ -17,7 +22,23 @@ impl BankAccount {
 
         self.balance
     }
+
+    pub fn withdraw(&mut self, amount: Decimal) -> Result<Decimal, Error> {
+        todo!()
+    }
 }
+
+impl std::fmt::Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let msg = match self {
+            Error::InsufficientBalance => "unsufficient balance",
+        };
+
+        write!(f, "operation declined: {msg}")
+    }
+}
+
+impl std::error::Error for Error {}
 
 #[cfg(test)]
 mod tests {
@@ -25,7 +46,7 @@ mod tests {
 
     use rust_decimal::Decimal;
 
-    use crate::BankAccount;
+    use crate::{BankAccount, Error};
 
     #[test]
     fn given_account_when_amount_deposited_then_new_balance_equals_amount() {
@@ -52,5 +73,21 @@ mod tests {
 
         // Assert
         assert_eq!(new_balance, Decimal::from_str("200.00").unwrap());
+    }
+
+    #[test]
+    fn given_account_when_withdrawal_reduces_balance_below_zero_then_insuficient_balance_error() {
+        // Arrange
+        let amount = Decimal::new(10000, 2);    // 100.00
+        let mut bank_account = BankAccount::new();
+
+        // Act
+        let result = bank_account.withdraw(amount);
+
+        // Assert
+        assert_eq!(
+            result.err().unwrap(),
+            Error::InsufficientBalance
+        );
     }
 }

@@ -29,3 +29,4 @@ public class Account {
 
 1. Initial balance is 0.00
 2. Each additional deposit increases the balance accordingly.
+3. Any withdrawal that would decrease the balance below 0 is not allowed

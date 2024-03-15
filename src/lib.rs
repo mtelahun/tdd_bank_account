@@ -13,7 +13,7 @@ impl BankAccount {
     }
 
     pub fn deposit(&self, amount: Decimal) -> Decimal {
-        todo!()
+        amount
     }
 }
 

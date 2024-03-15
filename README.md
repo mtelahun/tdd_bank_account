@@ -24,3 +24,8 @@ public class Account {
 ### Requirements
 
 1. Deposit into Account
+
+### Additional requirements added by me
+
+1. Initial balance is 0.00
+2. Each additional deposit increases the balance accordingly.

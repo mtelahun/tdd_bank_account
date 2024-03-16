@@ -14,15 +14,14 @@ fn main() {
         let input = solicit_input(
             "Please enter transaction type(1: Deposit, 2: Withdrawal, 3: Print Statement): ",
         );
-        let input = input.trim();
 
         if input == "1" {
             let amount = solicit_input("Enter amount: ");
-            let amount = Decimal::from_str(&amount.trim()).expect("unable to parse the amount");
+            let amount = Decimal::from_str(&amount).expect("unable to parse the amount");
             let _ = bank_account.deposit(amount);
         } else if input == "2" {
             let amount = solicit_input("Enter amount: ");
-            let amount = Decimal::from_str(&amount.trim()).expect("unable to parse the amount");
+            let amount = Decimal::from_str(&amount).expect("unable to parse the amount");
             match bank_account.withdraw(amount) {
                 Ok(_) => (),
                 Err(e) => {

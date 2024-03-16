@@ -24,6 +24,7 @@ public class Account {
 ### Requirements
 
 1. Deposit into Account
+2. Withdraw from an Account
 
 ### Additional requirements added by me
 

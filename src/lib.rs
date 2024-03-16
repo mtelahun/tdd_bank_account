@@ -96,4 +96,18 @@ mod tests {
             Error::InsufficientBalance
         );
     }
+
+    #[test]
+    fn given_account_when_withdraw_amount_then_balance_decreases_by_amount() {
+        // Arrange
+        let amount = Decimal::new(10000, 2);    // 100.00
+        let mut bank_account = BankAccount::new();
+        let _ = bank_account.deposit(amount);
+
+        // Act
+        let new_balance = bank_account.withdraw(amount).expect("failed to withdraw");
+
+        // Assert
+        assert_eq!(new_balance, Decimal::ZERO);
+    }
 }

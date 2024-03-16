@@ -1,4 +1,4 @@
-use chrono::NaiveDateTime;
+use chrono::{DateTime, Local, NaiveDateTime};
 use rust_decimal::Decimal;
 
 #[derive(Debug, Default)]
@@ -8,13 +8,13 @@ struct BankAccount {
 
 #[derive(Debug, Default)]
 pub struct BankStatement {
-    date_created: NaiveDateTime,
-    lines: Vec<StatementLine>
+    date_created: DateTime<Local>,
+    lines: Vec<StatementLine>,
 }
 
 #[derive(Debug)]
 pub struct StatementLine {
-    timestamp: NaiveDateTime,
+    timestamp: DateTime<Local>,
     transaction_type: TransactionType,
     amount: Decimal,
 }
@@ -54,7 +54,10 @@ impl BankAccount {
     }
 
     pub fn get_statement(&self) -> BankStatement {
-        todo!()
+        BankStatement {
+            date_created: Local::now(),
+            lines: Vec::<StatementLine>::new(),
+        }
     }
 }
 
@@ -141,6 +144,10 @@ mod tests {
         let statement = bank_account.get_statement();
 
         // Assert
-        assert_eq!(statement.lines.len(), 0, "given a new bank account, the bank statement is empty");
+        assert_eq!(
+            statement.lines.len(),
+            0,
+            "given a new bank account, the bank statement is empty"
+        );
     }
 }

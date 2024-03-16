@@ -75,12 +75,17 @@ impl BankAccount {
             date_created: Local::now(),
             lines: Vec::<StatementLine>::new(),
         };
+        let mut balance = Decimal::ZERO;
         for tx in self.transactions.iter() {
+            match tx.transaction_type {
+                TransactionType::Debit => balance -= tx.amount,
+                TransactionType::Credit => balance += tx.amount,
+            }
             statement.lines.push(StatementLine {
                 timestamp: tx.timestamp,
                 transaction_type: tx.transaction_type,
                 amount: tx.amount,
-                balance: Decimal::ZERO,
+                balance,
             });
         }
 
@@ -240,7 +245,7 @@ mod tests {
             "bank statement line 2 transaction is 'Debit'"
         );
         assert_eq!(
-            statement.lines[0].balance,
+            statement.lines[1].balance,
             Decimal::ZERO,
             "bank statement line 2 balance is 0.00"
         );

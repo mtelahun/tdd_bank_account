@@ -4,6 +4,7 @@ use rust_decimal::Decimal;
 #[derive(Debug, Default)]
 struct BankAccount {
     balance: Decimal,
+    transactions: Vec<StatementLine>,
 }
 
 #[derive(Debug, Default)]
@@ -19,7 +20,7 @@ pub struct StatementLine {
     amount: Decimal,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum TransactionType {
     Debit,
     Credit,
@@ -34,10 +35,16 @@ impl BankAccount {
     pub fn new() -> Self {
         Self {
             balance: Decimal::ZERO,
+            transactions: Vec::new(),
         }
     }
 
     pub fn deposit(&mut self, amount: Decimal) -> Decimal {
+        self.transactions.push(StatementLine {
+            timestamp: Local::now(),
+            transaction_type: TransactionType::Credit,
+            amount,
+        });
         self.balance += amount;
 
         self.balance
@@ -48,16 +55,30 @@ impl BankAccount {
             return Err(Error::InsufficientBalance);
         }
 
+        self.transactions.push(StatementLine {
+            timestamp: Local::now(),
+            transaction_type: TransactionType::Debit,
+            amount,
+        });
         self.balance -= amount;
 
         Ok(self.balance)
     }
 
     pub fn get_statement(&self) -> BankStatement {
-        BankStatement {
+        let mut statement = BankStatement {
             date_created: Local::now(),
             lines: Vec::<StatementLine>::new(),
+        };
+        for tx in self.transactions.iter() {
+            statement.lines.push(StatementLine {
+                timestamp: tx.timestamp,
+                transaction_type: tx.transaction_type,
+                amount: tx.amount,
+            });
         }
+
+        statement
     }
 }
 
@@ -152,7 +173,8 @@ mod tests {
     }
 
     #[test]
-    fn given_account_with_transactions_when_get_statement_then_return_statement_with_transactions() {
+    fn given_account_with_transactions_when_get_statement_then_return_statement_with_transactions()
+    {
         // Arrange
         let mut bank_account = BankAccount::new();
         let _ = bank_account.deposit(Decimal::new(20000, 2));

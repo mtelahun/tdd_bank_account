@@ -9,7 +9,7 @@ struct BankAccount {
 #[derive(Debug, Default)]
 pub struct BankStatement {
     date_created: DateTime<Local>,
-    lines: Vec<Transaction>,
+    lines: Vec<StatementLine>,
 }
 
 #[derive(Debug)]
@@ -17,6 +17,14 @@ pub struct Transaction {
     timestamp: DateTime<Local>,
     transaction_type: TransactionType,
     amount: Decimal,
+}
+
+#[derive(Debug)]
+pub struct StatementLine {
+    timestamp: DateTime<Local>,
+    transaction_type: TransactionType,
+    amount: Decimal,
+    balance: Decimal,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -65,13 +73,14 @@ impl BankAccount {
     pub fn get_statement(&self) -> BankStatement {
         let mut statement = BankStatement {
             date_created: Local::now(),
-            lines: Vec::<Transaction>::new(),
+            lines: Vec::<StatementLine>::new(),
         };
         for tx in self.transactions.iter() {
-            statement.lines.push(Transaction {
+            statement.lines.push(StatementLine {
                 timestamp: tx.timestamp,
                 transaction_type: tx.transaction_type,
                 amount: tx.amount,
+                balance: Decimal::ZERO,
             });
         }
 
@@ -216,6 +225,11 @@ mod tests {
             "bank statement line 1 transaction is 'Credit'"
         );
         assert_eq!(
+            statement.lines[0].balance,
+            Decimal::new(20000, 2),
+            "bank statement line 1 balance is 200.00"
+        );
+        assert_eq!(
             statement.lines[1].amount,
             Decimal::new(20000, 2),
             "bank statement line 2 amount is 200.00"
@@ -224,6 +238,11 @@ mod tests {
             statement.lines[1].transaction_type,
             TransactionType::Debit,
             "bank statement line 2 transaction is 'Debit'"
+        );
+        assert_eq!(
+            statement.lines[0].balance,
+            Decimal::ZERO,
+            "bank statement line 2 balance is 0.00"
         );
     }
 }

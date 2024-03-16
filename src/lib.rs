@@ -1,8 +1,28 @@
+use chrono::NaiveDateTime;
 use rust_decimal::Decimal;
 
 #[derive(Debug, Default)]
 struct BankAccount {
     balance: Decimal,
+}
+
+#[derive(Debug, Default)]
+pub struct BankStatement {
+    date_created: NaiveDateTime,
+    lines: Vec<StatementLine>
+}
+
+#[derive(Debug)]
+pub struct StatementLine {
+    timestamp: NaiveDateTime,
+    transaction_type: TransactionType,
+    amount: Decimal,
+}
+
+#[derive(Debug)]
+pub enum TransactionType {
+    Debit,
+    Credit,
 }
 
 #[derive(Debug, PartialEq)]
@@ -32,6 +52,10 @@ impl BankAccount {
 
         Ok(self.balance)
     }
+
+    pub fn get_statement(&self) -> BankStatement {
+        todo!()
+    }
 }
 
 impl std::fmt::Display for Error {
@@ -48,7 +72,7 @@ impl std::error::Error for Error {}
 
 #[cfg(test)]
 mod tests {
-    use std::str::FromStr;
+    use std::{arch::x86_64::_mm_aesimc_si128, str::FromStr};
 
     use rust_decimal::Decimal;
 
@@ -106,5 +130,17 @@ mod tests {
 
         // Assert
         assert_eq!(new_balance, Decimal::ZERO);
+    }
+
+    #[test]
+    fn given_account_with_zero_transactions_when_get_statement_then_return_empty_list() {
+        // Arrange
+        let bank_account = BankAccount::new();
+
+        // Act
+        let statement = bank_account.get_statement();
+
+        // Assert
+        assert_eq!(statement.lines.len(), 0, "given a new bank account, the bank statement is empty");
     }
 }

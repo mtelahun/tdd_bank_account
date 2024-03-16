@@ -25,6 +25,7 @@ public class Account {
 
 1. Deposit into Account
 2. Withdraw from an Account
+3. Print the Account statement to the console
 
 ### Additional requirements added by me
 

@@ -24,7 +24,13 @@ impl BankAccount {
     }
 
     pub fn withdraw(&mut self, amount: Decimal) -> Result<Decimal, Error> {
-        todo!()
+        if self.balance - amount < Decimal::ZERO {
+            return Err(Error::InsufficientBalance);
+        }
+
+        self.balance -= amount;
+
+        Ok(self.balance)
     }
 }
 

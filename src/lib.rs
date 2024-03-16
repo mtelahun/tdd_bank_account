@@ -1,20 +1,19 @@
-use chrono::{DateTime, Local, NaiveDateTime};
+use chrono::{DateTime, Local};
 use rust_decimal::Decimal;
 
 #[derive(Debug, Default)]
 struct BankAccount {
-    balance: Decimal,
-    transactions: Vec<StatementLine>,
+    transactions: Vec<Transaction>,
 }
 
 #[derive(Debug, Default)]
 pub struct BankStatement {
     date_created: DateTime<Local>,
-    lines: Vec<StatementLine>,
+    lines: Vec<Transaction>,
 }
 
 #[derive(Debug)]
-pub struct StatementLine {
+pub struct Transaction {
     timestamp: DateTime<Local>,
     transaction_type: TransactionType,
     amount: Decimal,
@@ -34,44 +33,42 @@ pub enum Error {
 impl BankAccount {
     pub fn new() -> Self {
         Self {
-            balance: Decimal::ZERO,
             transactions: Vec::new(),
         }
     }
 
     pub fn deposit(&mut self, amount: Decimal) -> Decimal {
-        self.transactions.push(StatementLine {
+        self.transactions.push(Transaction {
             timestamp: Local::now(),
             transaction_type: TransactionType::Credit,
             amount,
         });
-        self.balance += amount;
 
-        self.balance
+        self.get_balance()
     }
 
     pub fn withdraw(&mut self, amount: Decimal) -> Result<Decimal, Error> {
-        if self.balance - amount < Decimal::ZERO {
+        let balance = self.get_balance();
+        if balance - amount < Decimal::ZERO {
             return Err(Error::InsufficientBalance);
         }
 
-        self.transactions.push(StatementLine {
+        self.transactions.push(Transaction {
             timestamp: Local::now(),
             transaction_type: TransactionType::Debit,
             amount,
         });
-        self.balance -= amount;
 
-        Ok(self.balance)
+        Ok(self.get_balance())
     }
 
     pub fn get_statement(&self) -> BankStatement {
         let mut statement = BankStatement {
             date_created: Local::now(),
-            lines: Vec::<StatementLine>::new(),
+            lines: Vec::<Transaction>::new(),
         };
         for tx in self.transactions.iter() {
-            statement.lines.push(StatementLine {
+            statement.lines.push(Transaction {
                 timestamp: tx.timestamp,
                 transaction_type: tx.transaction_type,
                 amount: tx.amount,
@@ -79,6 +76,25 @@ impl BankAccount {
         }
 
         statement
+    }
+
+    fn get_balance(&self) -> Decimal {
+
+        let credits: Decimal = self
+            .transactions
+            .iter()
+            .filter(|tx| tx.transaction_type == TransactionType::Credit)
+            .map(|tx| tx.amount)
+            .sum();
+
+        let debits: Decimal = self
+            .transactions
+            .iter()
+            .filter(|tx| tx.transaction_type == TransactionType::Debit)
+            .map(|tx| tx.amount)
+            .sum();
+
+        credits - debits
     }
 }
 

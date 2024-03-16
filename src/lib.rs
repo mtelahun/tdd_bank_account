@@ -2,14 +2,14 @@ use chrono::{DateTime, Local};
 use rust_decimal::Decimal;
 
 #[derive(Debug, Default)]
-struct BankAccount {
+pub struct BankAccount {
     transactions: Vec<Transaction>,
 }
 
 #[derive(Debug, Default)]
 pub struct BankStatement {
-    date_created: DateTime<Local>,
-    lines: Vec<StatementLine>,
+    pub date_created: DateTime<Local>,
+    pub lines: Vec<StatementLine>,
 }
 
 #[derive(Debug)]
@@ -21,10 +21,10 @@ pub struct Transaction {
 
 #[derive(Debug)]
 pub struct StatementLine {
-    timestamp: DateTime<Local>,
-    transaction_type: TransactionType,
-    amount: Decimal,
-    balance: Decimal,
+    pub timestamp: DateTime<Local>,
+    pub transaction_type: TransactionType,
+    pub amount: Decimal,
+    pub balance: Decimal,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -93,7 +93,6 @@ impl BankAccount {
     }
 
     fn get_balance(&self) -> Decimal {
-
         let credits: Decimal = self
             .transactions
             .iter()
@@ -126,7 +125,7 @@ impl std::error::Error for Error {}
 
 #[cfg(test)]
 mod tests {
-    use std::{arch::x86_64::_mm_aesimc_si128, str::FromStr};
+    use std::str::FromStr;
 
     use rust_decimal::Decimal;
 

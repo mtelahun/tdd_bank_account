@@ -19,7 +19,7 @@ pub struct StatementLine {
     amount: Decimal,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum TransactionType {
     Debit,
     Credit,
@@ -79,7 +79,7 @@ mod tests {
 
     use rust_decimal::Decimal;
 
-    use crate::{BankAccount, Error};
+    use crate::{BankAccount, Error, TransactionType};
 
     #[test]
     fn given_account_when_amount_deposited_then_new_balance_equals_amount() {
@@ -136,7 +136,7 @@ mod tests {
     }
 
     #[test]
-    fn given_account_with_zero_transactions_when_get_statement_then_return_empty_list() {
+    fn given_account_with_zero_transactions_when_get_statement_then_return_empty_statement() {
         // Arrange
         let bank_account = BankAccount::new();
 
@@ -148,6 +148,44 @@ mod tests {
             statement.lines.len(),
             0,
             "given a new bank account, the bank statement is empty"
+        );
+    }
+
+    #[test]
+    fn given_account_with_transactions_when_get_statement_then_return_statement_with_transactions() {
+        // Arrange
+        let mut bank_account = BankAccount::new();
+        let _ = bank_account.deposit(Decimal::new(20000, 2));
+        let _ = bank_account.withdraw(Decimal::new(20000, 2));
+
+        // Act
+        let statement = bank_account.get_statement();
+
+        // Assert
+        assert_eq!(
+            statement.lines.len(),
+            2,
+            "the bank statement contains 2 transactions"
+        );
+        assert_eq!(
+            statement.lines[0].amount,
+            Decimal::new(20000, 2),
+            "bank statement line 1 amount is 200.00"
+        );
+        assert_eq!(
+            statement.lines[0].transaction_type,
+            TransactionType::Credit,
+            "bank statement line 1 transaction is 'Credit'"
+        );
+        assert_eq!(
+            statement.lines[1].amount,
+            Decimal::new(20000, 2),
+            "bank statement line 2 amount is 200.00"
+        );
+        assert_eq!(
+            statement.lines[1].transaction_type,
+            TransactionType::Debit,
+            "bank statement line 2 transaction is 'Debit'"
         );
     }
 }
